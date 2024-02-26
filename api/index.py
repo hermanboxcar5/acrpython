@@ -2,11 +2,6 @@ import os
 import requests
 import time
 import json
-import threading
-
-from flask import Flask
-
-app = Flask(__name__)
 
 # Credentials
 username = os.environ.get('username')
@@ -47,18 +42,21 @@ def collect_timed_bonus(token):
         data=payload.encode('utf-8'))
     return response
 
-@app.route('/')
-def last_request_time():
+def handler(request):
     global last_request_timestamp
-    if last_request_timestamp:
-        return f"Last request sent at: {last_request_timestamp}"
+    if request.method == 'GET':
+        if last_request_timestamp:
+            return {
+                'statusCode': 200,
+                'body': f'Last request sent at: {last_request_timestamp}'
+            }
+        else:
+            return {
+                'statusCode': 200,
+                'body': 'No requests sent yet.'
+            }
     else:
-        return "No requests sent yet."
-
-if __name__ == "__main__":
-    # Start a background thread to claim timed bonus
-    claim_timed_bonus_thread = threading.Thread(target=claim_timed_bonus)
-    claim_timed_bonus_thread.start()
-
-    # Run the Flask app
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+        return {
+            'statusCode': 405,
+            'body': 'Method Not Allowed'
+        }
