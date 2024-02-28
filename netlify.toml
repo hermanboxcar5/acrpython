@@ -1,2 +1,2 @@
 [build]
-  command = "pip install requests Flask gunicorn && gunicorn -b 0.0.0.0:3000 index:app"
+  command = "pip install requests Flask && python3 index.py"
